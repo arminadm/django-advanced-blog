@@ -5,7 +5,7 @@ from blog.models import Post
 from django.utils import timezone
 from blog.forms import CreateNewPost
 from django.urls import reverse
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 # Create your views here.
 
 #Function Based Views
@@ -55,35 +55,45 @@ class DetailViewOfPost(LoginRequiredMixin, DetailView):
         context['now'] = timezone.now()
         return context  
 
-class FormViewNewPost(LoginRequiredMixin, FormView):
+class FormViewNewPost(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     form_class = CreateNewPost
     template_name = 'createNewPostByFormView.html'
     success_url = '/blog/'
+
+    permission_required = 'blog.add_post' #APP.ACTION_OBJECT - used for permissionRequiredMixin
+
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
 
-class CreateViewNewPost(LoginRequiredMixin, CreateView):
+class CreateViewNewPost(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Post
     #fields = "__all__" 
     fields = ['title', 'content', 'status', 'category', 'published_date'] # you can use following commented code line instead of this
     # form_class = CreateNewPost
     template_name = 'createNewPostByCreateView.html'
     success_url = '/blog/'
+
+    permission_required = 'blog.add_post' #APP.ACTION_OBJECT - used for permissionRequiredMixin
+
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
     
-class UpdateViewToEdit(LoginRequiredMixin, UpdateView):
+class UpdateViewToEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Post
     fields = ['title', 'content', 'status', 'category', 'published_date']
     template_name = 'edit_post.html'
+    
+    permission_required = 'blog.change_post' #APP.ACTION_OBJECT - used for permissionRequiredMixin
+
     # you can user get_success_url instead of using success_url so you can have access to self
     def get_success_url(self):
         return reverse('blog:detailViewOfPost', args=(self.object.pk,))
 
-class DeleteViewToDelete(LoginRequiredMixin, DeleteView):
+class DeleteViewToDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Post
     success_url = '/blog'
     template_name = 'delete_confirmation.html'
 
+    permission_required = 'blog.delete_post' #APP.ACTION_OBJECT - used for permissionRequiredMixin
