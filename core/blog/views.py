@@ -1,9 +1,10 @@
 from django.shortcuts import get_object_or_404, render
-from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView
+from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView
 from django.views.generic.base import RedirectView
 from blog.models import Post
 from django.utils import timezone
 from blog.forms import CreateNewPost
+from django.urls import reverse
 # Create your views here.
 
 #Function Based Views
@@ -69,3 +70,14 @@ class CreateViewNewPost(CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
+    
+class UpdateViewToEdit(UpdateView):
+    model = Post
+    fields = ['title', 'content', 'status', 'category', 'published_date']
+    template_name = 'edit_post.html'
+    # you can user get_success_url instead of using success_url so you can have access to self
+    def get_success_url(self):
+        return reverse('blog:detailViewOfPost', args=(self.object.pk,))
+
+        
+
