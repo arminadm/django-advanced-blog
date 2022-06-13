@@ -13,11 +13,13 @@
     <p>{{ post.content }}</p>
     <p>Author: {{ object.author }}</p>
     <p>Published: {{ object.published_date }}</p>
+    <p>post pk: {{post.pk}}</p>
     <p>Time: {{now}}</p>
     <!-- as you can see both object and post names can be used here-->
     <br>
     <hr>
     <a href="{% url 'blog:updateViewToEdit' pk=post.pk %}"><button>edit this post</button></a>
+    <a href="{% url 'blog:deleteViewToDelete' pk=post.pk %}"><button>delete this post</button></a>
     <a href="{% url 'blog:listViewOfPosts' %}"><button>back to all posts</button></a>
 </body>
 

@@ -13,7 +13,7 @@
     <ul>
         {% for post in posts %}
         <li><a href="{% url 'blog:detailViewOfPost' pk=post.id %}">{{ post.title }}</a></li>
-        <li><small>{{post.author}} - {{ post.published_date|date }}</small></li>
+        <li><small>{{post.author}} - pk:{{post.pk}} - {{ post.published_date|date }}</small></li>
         <br>
         {% empty %}
         <li>No Posts yet.</li>

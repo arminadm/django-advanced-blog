@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render
-from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView
+from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView, DeleteView
 from django.views.generic.base import RedirectView
 from blog.models import Post
 from django.utils import timezone
@@ -79,5 +79,8 @@ class UpdateViewToEdit(UpdateView):
     def get_success_url(self):
         return reverse('blog:detailViewOfPost', args=(self.object.pk,))
 
-        
+class DeleteViewToDelete(DeleteView):
+    model = Post
+    success_url = '/blog'
+    template_name = 'delete_confirmation.html'
 
