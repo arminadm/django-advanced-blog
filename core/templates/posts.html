@@ -9,12 +9,12 @@
 </head>
 
 <body>
-    <h1>Articles</h1>
+    <h1>Posts</h1>
     <ul>
-        {% for article in object_list %}
-        <li>{{ article.published_date|date }} - {{ article.title }}</li>
+        {% for post in posts %}
+        <li><a href="{% url 'blog:detailViewOfPost' pk=post.id %}">{{ post.title }} - {{ post.published_date|date }}</a></li>
         {% empty %}
-        <li>No articles yet.</li>
+        <li>No Posts yet.</li>
         {% endfor %}
     </ul>
 
