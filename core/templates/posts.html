@@ -12,12 +12,17 @@
     <h1>Posts</h1>
     <ul>
         {% for post in posts %}
-        <li><a href="{% url 'blog:detailViewOfPost' pk=post.id %}">{{ post.title }} - {{ post.published_date|date }}</a></li>
+        <li><a href="{% url 'blog:detailViewOfPost' pk=post.id %}">{{ post.title }}</a></li>
+        <li><small>{{post.author}} - {{ post.published_date|date }}</small></li>
+        <br>
         {% empty %}
         <li>No Posts yet.</li>
         {% endfor %}
     </ul>
-
+    <br>
+    <h3><a href="{% url 'blog:formViewNewPost' %}">create new post (wrong way: by formview))</a></h3>
+    <h3><a href="{% url 'blog:createViewNewPost' %}">create new post (right way: by createview))</a></h3>
+    <hr>
     <div class="pagination">
         <span class="step-links">
             {% if page_obj.has_previous %}
