@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.base import RedirectView
 from blog.models import Post
 # Create your views here.
@@ -17,9 +17,7 @@ class IndexCBView(TemplateView):
     template_name = 'index.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        posts = Post.objects.all()
-        context['name'] = 'name of user'
-        context['post'] = posts
+        context['name'] = self.request.user
         return context
 
 class RedirectToMaktab(RedirectView):
@@ -30,3 +28,10 @@ class RedirectToMaktab(RedirectView):
         posts = get_object_or_404(Post, pk=kwargs['pk'])
         print(posts)
         return super().get_redirect_url(**kwargs)
+
+class ListViewOfPosts(ListView):
+    model = Post
+    paginate_by = 3
+    ordering = '-created_date'
+    template_name = 'posts.html'
+

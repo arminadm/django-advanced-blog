@@ -7,9 +7,16 @@
     <title>Document</title>
 </head>
 <body>
-    Index page
+    <h1>Index page</h1>
 
-    {{name}}
-    {{post}}
+    You signed in as: {{name}}
+    <hr>
+    <a href="{% url 'blog:listViewOfPosts' %}">view posts</a>
+    {% comment %} {% for post in posts %}
+        <h2>{{post.title}}</h2>
+        <small>{{post.author}}</small>
+        <p>{{post.content}}</p>
+        <small>{{post.published_date}}</small>
+    {% endfor %} {% endcomment %}
 </body>
 </html>
