@@ -5,6 +5,7 @@ from blog.models import Post
 from django.utils import timezone
 from blog.forms import CreateNewPost
 from django.urls import reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 
 #Function Based Views
@@ -43,16 +44,18 @@ class ListViewOfPosts(ListView):
     template_name = 'posts.html'
     context_object_name = 'posts'
 
-class DetailViewOfPost(DetailView):
+class DetailViewOfPost(LoginRequiredMixin, DetailView):
     model = Post
     template_name = 'detail.html'
     context_object_name = 'post'
+    # login_url = '/yechizi/' #use for loginrequiredmixin
+    # redirect_field_name = 'redirect_to' #use for loginrequiredmixin
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['now'] = timezone.now()
         return context  
 
-class FormViewNewPost(FormView):
+class FormViewNewPost(LoginRequiredMixin, FormView):
     form_class = CreateNewPost
     template_name = 'createNewPostByFormView.html'
     success_url = '/blog/'
@@ -60,7 +63,7 @@ class FormViewNewPost(FormView):
         form.save()
         return super().form_valid(form)
 
-class CreateViewNewPost(CreateView):
+class CreateViewNewPost(LoginRequiredMixin, CreateView):
     model = Post
     #fields = "__all__" 
     fields = ['title', 'content', 'status', 'category', 'published_date'] # you can use following commented code line instead of this
@@ -71,7 +74,7 @@ class CreateViewNewPost(CreateView):
         form.instance.author = self.request.user
         return super().form_valid(form)
     
-class UpdateViewToEdit(UpdateView):
+class UpdateViewToEdit(LoginRequiredMixin, UpdateView):
     model = Post
     fields = ['title', 'content', 'status', 'category', 'published_date']
     template_name = 'edit_post.html'
@@ -79,7 +82,7 @@ class UpdateViewToEdit(UpdateView):
     def get_success_url(self):
         return reverse('blog:detailViewOfPost', args=(self.object.pk,))
 
-class DeleteViewToDelete(DeleteView):
+class DeleteViewToDelete(LoginRequiredMixin, DeleteView):
     model = Post
     success_url = '/blog'
     template_name = 'delete_confirmation.html'
