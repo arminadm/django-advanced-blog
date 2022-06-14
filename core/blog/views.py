@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView, DeleteView
 from django.views.generic.base import RedirectView
 from blog.models import Post
+from accounts.models import Profile
 from django.utils import timezone
 from blog.forms import CreateNewPost
 from django.urls import reverse
@@ -69,15 +70,16 @@ class FormViewNewPost(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 class CreateViewNewPost(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Post
     #fields = "__all__" 
-    fields = ['title', 'content', 'status', 'category', 'published_date'] # you can use following commented code line instead of this
-    # form_class = CreateNewPost
+    # fields = ['title', 'content', 'status', 'category', 'published_date'] # you can use following commented code line instead of this
+    form_class = CreateNewPost
     template_name = 'createNewPostByCreateView.html'
     success_url = '/blog/'
 
     permission_required = 'blog.add_post' #APP.ACTION_OBJECT - used for permissionRequiredMixin
-
+    
     def form_valid(self, form):
-        form.instance.author = self.request.user
+        user = Profile.objects.get(user=self.request.user)
+        form.instance.author = user
         return super().form_valid(form)
     
 class UpdateViewToEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):

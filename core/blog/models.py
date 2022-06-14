@@ -6,7 +6,7 @@ User = get_user_model()
 
 # Create your models here.
 class Post(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey('accounts.Profile', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     image = models.ImageField(null=True, blank=True)
     content = models.TextField()
