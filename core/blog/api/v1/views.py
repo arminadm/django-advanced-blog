@@ -29,3 +29,7 @@ def api_post_detail(request, pk):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(request.data)
+    elif request.method == 'DELETE':
+        post = get_object_or_404(Post, id=pk, status=True)
+        post.delete()
+        return Response({"detail": "post removed successfully"})
