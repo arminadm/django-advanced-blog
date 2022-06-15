@@ -1,10 +1,13 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from ...models import Post
 from .serializer import PostSerializer
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
+
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def api_post_list(request):
     if request.method == 'GET':
         post = Post.objects.filter(status=True)
@@ -18,6 +21,7 @@ def api_post_list(request):
     
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAdminUser])
 def api_post_detail(request, pk):
     if request.method == 'GET':
         post = get_object_or_404(Post, id=pk, status=True)
