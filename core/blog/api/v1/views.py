@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.generics import GenericAPIView, mixins
+from rest_framework.generics import ListAPIView, ListCreateAPIView
 
 #STEP1: previous function based methods
 """
@@ -92,6 +93,7 @@ class PostDetail(APIView):
 #STEP3: using GenericAPIView alone 
 '''
 class PostList(GenericAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True)
 
@@ -111,6 +113,7 @@ class PostList(GenericAPIView):
 #STEP4: using GenericAPIView and mixins
 '''
 class PostList(GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True)
 
@@ -124,7 +127,11 @@ class PostList(GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin):
         return self.create(request, *args, **kwargs)
 '''
 
-
+#STEP5: using ListCreateAPIView
+class PostList(ListCreateAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = PostSerializer
+    queryset = Post.objects.filter(status=True)
 
 class PostDetail(GenericAPIView):
     pass
