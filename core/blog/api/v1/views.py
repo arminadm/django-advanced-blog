@@ -6,8 +6,7 @@ from .serializer import PostSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.generics import GenericAPIView, mixins
-from rest_framework.generics import ListAPIView, ListCreateAPIView
+from rest_framework.generics import GenericAPIView, mixins, ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
 #STEP1: previous function based methods
 """
@@ -107,6 +106,27 @@ class PostList(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+class PostDetail(GenericAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = PostSerializer
+
+    def get(self, request, pk, *args, **kwargs):
+        post = get_object_or_404(Post, status=True, id=pk)
+        serializer = self.serializer_class(post)
+        return Response(serializer.data)
+    
+    def put(self, request, pk, *args, **kwargs):
+        post = get_object_or_404(Post, status=True, id=pk)
+        serializer = self.serializer_class(post, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    
+    def delete(self, request, pk, *args, **kwargs):
+        post = get_object_or_404(Post, status=True, id=pk)
+        post.delete()
+        return Response({"detail":"Post object deleted successfully"})
 '''
 
 
@@ -125,6 +145,21 @@ class PostList(GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin):
     # we have to make post method so we can connect GenericAPIView and minixs.CreateModelMinixs
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
+
+
+class PostDetail(GenericAPIView, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = PostSerializer
+    queryset = Post.objects.filter(status=True)
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+    
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
 '''
 
 #STEP5: using ListCreateAPIView
@@ -133,5 +168,8 @@ class PostList(ListCreateAPIView):
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True)
 
-class PostDetail(GenericAPIView):
-    pass
+
+class PostDetail(RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = PostSerializer
+    queryset = Post.objects.filter(status=True) #you can also override get_object method instead of setting the queryset
