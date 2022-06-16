@@ -2,13 +2,13 @@
 from urllib import response
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from ...models import Post
-from .serializer import PostSerializer
+from ...models import Post, Category
+from .serializer import PostSerializer, CategorySerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.generics import GenericAPIView, mixins, ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.viewsets import ViewSet
+from rest_framework.viewsets import ViewSet, ModelViewSet
 
 #STEP1: previous function based methods
 """
@@ -180,6 +180,7 @@ class PostDetail(RetrieveUpdateDestroyAPIView):
 
 
 #STEP6: using ViewSET
+'''
 class PostViewSet(ViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
@@ -214,3 +215,14 @@ class PostViewSet(ViewSet):
         post = get_object_or_404(self.queryset, pk=pk)
         post.delete()
         return Response({'detail':'Post object removed successfully'})
+'''
+#STEP7: using ModelViewSet
+class PostModelViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = PostSerializer
+    queryset = Post.objects.filter(status=True)
+
+class CategoryModelViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
