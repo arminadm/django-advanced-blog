@@ -6,8 +6,9 @@ from .serializer import PostSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.generics import GenericAPIView, mixins
 
-# previous function based methods
+#STEP1: previous function based methods
 """
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticatedOrReadOnly])
@@ -42,6 +43,8 @@ def api_post_detail(request, pk):
         return Response({"detail": "post removed successfully"})
 """
 
+#STEP2: using APIView for class based views
+'''
 class PostList(APIView):
     """ displaying all the posts with true status and allow logged in users to save new posts """
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -59,7 +62,6 @@ class PostList(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
-
 
 class PostDetail(APIView):
     """ showing the detail of each post to admin user (others can't see) and also allow admin to change or delete """
@@ -85,3 +87,44 @@ class PostDetail(APIView):
         post = get_object_or_404(Post, status=True, id=pk)
         post.delete()
         return Response({"detail":"Post object removed successfully"}, status=status.HTTP_204_NO_CONTENT)
+'''
+
+#STEP3: using GenericAPIView alone 
+'''
+class PostList(GenericAPIView):
+    serializer_class = PostSerializer
+    queryset = Post.objects.filter(status=True)
+
+    def get(self, request):
+        instance = self.get_queryset()
+        serializer = self.get_serializer(instance, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+'''
+
+
+#STEP4: using GenericAPIView and mixins
+'''
+class PostList(GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin):
+    serializer_class = PostSerializer
+    queryset = Post.objects.filter(status=True)
+
+    # ??? UNSOLVED PROBLEM: where does get post or any other methods come from? why should i create these methods and why they are working?? ???
+    # we have to make get method so we can connect GenericAPIView and mixins.ListModelMixin
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    # we have to make post method so we can connect GenericAPIView and minixs.CreateModelMinixs
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+'''
+
+
+
+class PostDetail(GenericAPIView):
+    pass
