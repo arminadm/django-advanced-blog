@@ -1,4 +1,5 @@
 # from rest_framework.decorators import api_view, permission_classes
+from urllib import response
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from ...models import Post
@@ -7,6 +8,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.generics import GenericAPIView, mixins, ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.viewsets import ViewSet
 
 #STEP1: previous function based methods
 """
@@ -163,6 +165,7 @@ class PostDetail(GenericAPIView, mixins.UpdateModelMixin, mixins.RetrieveModelMi
 '''
 
 #STEP5: using ListCreateAPIView
+'''
 class PostList(ListCreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
@@ -173,3 +176,41 @@ class PostDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True) #you can also override get_object method instead of setting the queryset
+'''
+
+
+#STEP6: using ViewSET
+class PostViewSet(ViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = PostSerializer
+    queryset = Post.objects.filter(status=True)
+    
+    def list(self, request):
+        # ??? UNSOLVED PROBLEM: dont know how, but looks like next 2 codes have so much time delay difference with each other, first line apply all the changes in a long time ???
+        # serializer = self.serializer_class(self.queryset, many=True)
+        posts = Post.objects.filter(status=True)
+        serializer = self.serializer_class(posts, many=True)
+        return Response(serializer.data)
+
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    
+    def retrieve(self, request, pk):
+        post = get_object_or_404(self.queryset, pk=pk)
+        serializer = self.serializer_class(post)
+        return Response(serializer.data)
+
+    def update(self, request, pk):
+        post = get_object_or_404(self.queryset, pk=pk)
+        serializer = self.serializer_class(post, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def destroy(self, request, pk):
+        post = get_object_or_404(self.queryset, pk=pk)
+        post.delete()
+        return Response({'detail':'Post object removed successfully'})
