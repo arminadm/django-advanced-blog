@@ -20,3 +20,4 @@ urlpatterns = router.urls
 #     path('posts/', PostViewSet.as_view({'get':'list', 'post':'create'}), name='api-post-list'),
 #     path('posts/<int:pk>/', PostViewSet.as_view({'get':'retrieve', 'put':'update', 'delete':'destroy'}), name='api-post-detail'),
 # ]
+ 
