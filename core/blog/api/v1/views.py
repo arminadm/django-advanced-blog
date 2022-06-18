@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.generics import GenericAPIView, mixins, ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from rest_framework.decorators import action
+from .permissions import IsOwnerOrReadOnly
 
 #STEP1: previous function based methods
 """
@@ -219,7 +220,7 @@ class PostViewSet(ViewSet):
 
 #STEP7: using ModelViewSet
 class PostModelViewSet(ModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True)
 
