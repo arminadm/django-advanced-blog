@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import RegistrationApiView, CustomAuthToken, DestroyAuthToken
+from .views import RegistrationApiView, CustomAuthToken, DestroyAuthToken, CustomTokenObtainPairView
 # from rest_framework.authtoken.views import ObtainAuthToken
 
 from rest_framework_simplejwt.views import (
@@ -23,7 +23,7 @@ urlpatterns = [
     path('token/logout/', DestroyAuthToken.as_view(), name='logout-token'),
 
     # """login jwt"""
-    path('jwt/create', TokenObtainPairView.as_view(), name='create-jwt'),
+    path('jwt/create', CustomTokenObtainPairView.as_view(), name='create-jwt'),
     path('jwt/refresh', TokenRefreshView.as_view(), name='refresh-jwt'),
     path('jwt/verify', TokenVerifyView.as_view(), name='verify-jwt'),
 ]
