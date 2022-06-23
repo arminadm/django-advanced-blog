@@ -15,7 +15,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import get_user_model
 from accounts.models import Profile
-from django.core.mail import send_mail
+# from django.core.mail import send_mail
+from mail_templated import send_mail
+
 
 User = get_user_model()
 
@@ -96,12 +98,14 @@ class ActivateProfileView(GenericAPIView):
     permission_classes = [IsAuthenticated]
     # serializer_class = ActivateProfileSerializer
     def get(self, request, *args, **kwargs):
-        send_mail(
-            'Subject here',
-            'Here is the message.',
-            'from@example.com',
-            ['to@example.com'],
-            fail_silently=False,
-        )
+        # """sending email via django.core.mail"""
+        # send_mail(
+        #     'Subject here',
+        #     'Here is the message.',
+        #     'from@example.com',
+        #     ['to@example.com'],
+        #     fail_silently=False,
+        # )
+        send_mail('email/hello.tpl', {'user': 'armindarabimahboub'}, 'admin@example.com', ['user@example.com'])
         return Response({'details':'email sent'})
 
