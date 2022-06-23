@@ -1,19 +1,16 @@
-from django.urls import path, include
-from .views import (
+from django.urls import path
+from ..views import (
     RegistrationApiView,
     CustomAuthToken,
     DestroyAuthToken,
     CustomTokenObtainPairView,
-    ChangePasswordApiView,
-    ProfileApiView,)
+    ChangePasswordApiView,)
 # from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
     TokenVerifyView,
 )
-
-app_name = 'api-v1'
 
 urlpatterns = [
     # """registration"""
@@ -23,9 +20,6 @@ urlpatterns = [
     path('change-password/', ChangePasswordApiView.as_view(), name='change-password'),
 
     # """set password"""
-
-    # """profile"""
-    path('user-profile/', ProfileApiView.as_view(), name='user-profile'),
 
     # """login token"""
     # path('login/', ObtainAuthToken.as_view(), name='api-login'), #default token-login
