@@ -71,3 +71,17 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         validate_data['email'] = self.user.email
         validate_data['user_id'] = self.user.id
         return validate_data
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(max_length=100, required=True)
+    new_password = serializers.CharField(max_length=100, required=True)
+    new_password1 = serializers.CharField(max_length=100, required=True)
+    
+    def validate(self, attrs):
+        if attrs.get('new_password1') != attrs.get('new_password'):
+            raise serializers.ValidationError({'detail': 'passwords doesnt match'})
+        try:
+            validate_password(attrs.get('new_password'))
+        except exceptions.ValidationError as e:
+            raise serializers.ValidationError({'new_password':list(e.messages)})
+        return super().validate(attrs)
