@@ -4,7 +4,8 @@ from .views import (
     CustomAuthToken,
     DestroyAuthToken,
     CustomTokenObtainPairView,
-    ChangePasswordApiView)
+    ChangePasswordApiView,
+    ProfileApiView,)
 # from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -22,6 +23,9 @@ urlpatterns = [
     path('change-password/', ChangePasswordApiView.as_view(), name='change-password'),
 
     # """set password"""
+
+    # """profile"""
+    path('user-profile/', ProfileApiView.as_view(), name='user-profile'),
 
     # """login token"""
     # path('login/', ObtainAuthToken.as_view(), name='api-login'), #default token-login
