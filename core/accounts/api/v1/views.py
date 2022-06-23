@@ -18,6 +18,7 @@ from accounts.models import Profile
 from .utils import EmailThread
 # from django.core.mail import send_mail
 from mail_templated import send_mail,EmailMessage
+from rest_framework_simplejwt.tokens import RefreshToken
 
 User = get_user_model()
 
@@ -110,9 +111,19 @@ class ActivateProfileView(GenericAPIView):
         # """STEP2: sending email without threading"""
         # send_mail('email/hello.tpl', {'user': 'armindarabimahboub'}, 'admin@example.com', ['user@example.com'])
 
-
-        email = EmailMessage('email/hello.tpl', {'user': 'armindarabimahboub'}, 'admin@example.com', ['user@example.com'])
+        self.user_email = 'armin@armin.com'
+        self.user_obj = get_object_or_404(Profile, user__email=self.user_email)
+        email = EmailMessage(
+            'email/hello.tpl',
+            {
+                'user': f"{self.user_obj.first_name} {self.user_obj.last_name}", 
+                'token': self.get_tokens_for_user(self.user_obj)
+            },
+            'admin@example.com',
+            ['self.user_obj.user.email'])
         EmailThread(email).start()
-
         return Response({'details':'email sent'})
 
+    def get_tokens_for_user(self, user):
+        refresh = RefreshToken.for_user(user)
+        return str(refresh.access_token)
