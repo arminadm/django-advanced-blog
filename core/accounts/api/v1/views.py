@@ -29,10 +29,26 @@ class RegistrationApiView(GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        user_email = serializer.validated_data['email']
         data = {
-            'email': serializer.validated_data['email']
+            'email': user_email
         }
+        self.user_email = user_email
+        self.user_obj = get_object_or_404(Profile, user__email=self.user_email)
+        email = EmailMessage(
+            'email/email_verification.tpl',
+            {
+                'user': f"{self.user_obj.first_name} {self.user_obj.last_name}", 
+                'token': self.get_tokens_for_user(self.user_obj)
+            },
+            'admin@example.com',
+            [self.user_obj.user.email])
+        EmailThread(email).start()
         return Response(data, status=status.HTTP_201_CREATED)
+    
+    def get_tokens_for_user(self, user):
+        refresh = RefreshToken.for_user(user)
+        return str(refresh.access_token)
 
 class CustomAuthToken(ObtainAuthToken):
     serializer_class = CustomAuthTokenSerializer
@@ -120,7 +136,7 @@ class ActivateProfileView(GenericAPIView):
                 'token': self.get_tokens_for_user(self.user_obj)
             },
             'admin@example.com',
-            ['self.user_obj.user.email'])
+            [self.user_obj.user.email])
         EmailThread(email).start()
         return Response({'details':'email sent'})
 
