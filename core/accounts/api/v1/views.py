@@ -15,9 +15,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import get_user_model
 from accounts.models import Profile
+from .utils import EmailThread
 # from django.core.mail import send_mail
-from mail_templated import send_mail
-
+from mail_templated import send_mail,EmailMessage
 
 User = get_user_model()
 
@@ -98,7 +98,7 @@ class ActivateProfileView(GenericAPIView):
     permission_classes = [IsAuthenticated]
     # serializer_class = ActivateProfileSerializer
     def get(self, request, *args, **kwargs):
-        # """sending email via django.core.mail"""
+        # """STEP1: sending email via django.core.mail"""
         # send_mail(
         #     'Subject here',
         #     'Here is the message.',
@@ -106,6 +106,13 @@ class ActivateProfileView(GenericAPIView):
         #     ['to@example.com'],
         #     fail_silently=False,
         # )
-        send_mail('email/hello.tpl', {'user': 'armindarabimahboub'}, 'admin@example.com', ['user@example.com'])
+
+        # """STEP2: sending email without threading"""
+        # send_mail('email/hello.tpl', {'user': 'armindarabimahboub'}, 'admin@example.com', ['user@example.com'])
+
+
+        email = EmailMessage('email/hello.tpl', {'user': 'armindarabimahboub'}, 'admin@example.com', ['user@example.com'])
+        EmailThread(email).start()
+
         return Response({'details':'email sent'})
 
