@@ -5,7 +5,8 @@ from .serializer import (
     CustomAuthTokenSerializer,
     CustomTokenObtainPairSerializer,
     ChangePasswordSerializer,
-    ProfileSerializer)
+    ProfileSerializer,
+    ResendVerifySerializer)
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -164,3 +165,24 @@ class ConfirmVerifyView(APIView):
         user_obj.save()
         return Response({'details':'your account activated successfully'}, status=status.HTTP_200_OK)
 
+class ResendVerifyView(GenericAPIView):
+    serializer_class = ResendVerifySerializer
+    def post(self, request, *args, **kwargs):
+        serializer = ResendVerifySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.profile_obj = serializer.validated_data['profile_obj']
+        self.user_obj = self.profile_obj.user
+        email = EmailMessage(
+            'email/email_verification.tpl',
+            {
+                'user': f"{self.profile_obj.first_name} {self.profile_obj.last_name}", 
+                'token': self.get_tokens_for_user(self.user_obj)
+            },
+            'admin@example.com',
+            [self.user_obj.email])
+        EmailThread(email).start()
+        return Response({'details':'email resent successfully'})
+
+    def get_tokens_for_user(self, user):
+        refresh = RefreshToken.for_user(user)
+        return str(refresh.access_token)

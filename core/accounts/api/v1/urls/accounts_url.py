@@ -1,4 +1,5 @@
 from django.urls import path
+
 from ..views import (
     RegistrationApiView,
     CustomAuthToken,
@@ -6,7 +7,8 @@ from ..views import (
     CustomTokenObtainPairView,
     ChangePasswordApiView,
     TestActivateProfileView,
-    ConfirmVerifyView)
+    ConfirmVerifyView,
+    ResendVerifyView)
 # from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -20,8 +22,11 @@ urlpatterns = [
     path('change-password/', ChangePasswordApiView.as_view(), name='change-password'),
 
     # """verification"""
+    # after registration, token that is required for confirm-verification will be generated and sent to user email
     path('test-verification/', TestActivateProfileView.as_view(), name='test-verification'),
     path('confirm-verification/<str:token>/', ConfirmVerifyView.as_view(), name='confirm-verification'),
+    # in case that previous token is expired or not valid anymore, user can get new token by it's email
+    path('resend-confirm-verification/', ResendVerifyView.as_view(), name='resend-confirm-verification'),
 
     # """token"""
     # path('login/', ObtainAuthToken.as_view(), name='api-login'), #default token-login

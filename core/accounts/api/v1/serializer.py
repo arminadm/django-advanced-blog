@@ -96,4 +96,19 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ['first_name', 'last_name', 'email', 'image', 'description']
         # read_only_fields = ['email'] # does not work, you have to set read_only in email field which is above
+
+class ResendVerifySerializer(serializers.Serializer):
+    email = serializers.CharField(required=True)
     
+    def validate(self, attrs):
+        email = attrs.get('email')
+        try:
+            profile_obj = Profile.objects.get(user__email=email)
+        except Profile.DoesNotExist:
+            raise serializers.ValidationError({'detail':'email is not valid'})
+        user_obj = profile_obj.user
+        if user_obj.is_verified:
+            raise serializers.ValidationError({'detail':'your account is already verified'})
+        attrs['profile_obj'] = profile_obj
+        return super().validate(attrs)
+        
