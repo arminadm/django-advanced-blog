@@ -10,3 +10,4 @@ django-filter
 drf-yasg[validation]
 djangorestframework-simplejwt
 django-mail-templated
+djoser
