@@ -19,6 +19,9 @@ from .utils import EmailThread
 # from django.core.mail import send_mail
 from mail_templated import send_mail,EmailMessage
 from rest_framework_simplejwt.tokens import RefreshToken
+from jwt import decode
+from django.conf import settings
+from jwt.exceptions import InvalidSignatureError, ExpiredSignatureError
 
 User = get_user_model()
 
@@ -49,6 +52,7 @@ class RegistrationApiView(GenericAPIView):
     def get_tokens_for_user(self, user):
         refresh = RefreshToken.for_user(user)
         return str(refresh.access_token)
+
 
 class CustomAuthToken(ObtainAuthToken):
     serializer_class = CustomAuthTokenSerializer
@@ -111,7 +115,7 @@ class ProfileApiView(RetrieveUpdateAPIView):
         obj = get_object_or_404(queryset, id=self.request.user.id)
         return obj
 
-class ActivateProfileView(GenericAPIView):
+class TestActivateProfileView(GenericAPIView):
     permission_classes = [IsAuthenticated]
     # serializer_class = ActivateProfileSerializer
     def get(self, request, *args, **kwargs):
@@ -143,3 +147,20 @@ class ActivateProfileView(GenericAPIView):
     def get_tokens_for_user(self, user):
         refresh = RefreshToken.for_user(user)
         return str(refresh.access_token)
+
+class ConfirmVerifyView(APIView):
+    def get(self, request, token, *args, **kwargs):
+        try:
+            decoded_info = decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+        except InvalidSignatureError:
+            return Response({'details':'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+        except ExpiredSignatureError:
+            return Response({'details':'your token has expired'}, status=status.HTTP_400_BAD_REQUEST)
+        user_id = decoded_info.get('user_id')
+        user_obj = get_object_or_404(User, id=user_id)
+        if user_obj.is_verified:
+            return Response({'details':'your account is already activated'}, status=status.HTTP_200_OK)
+        user_obj.is_verified = True
+        user_obj.save()
+        return Response({'details':'your account activated successfully'}, status=status.HTTP_200_OK)
+
