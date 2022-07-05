@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: test django project
-      run: true
+      run: docker-compose exec backend sh -c "pytest ."
