@@ -3,7 +3,5 @@ from ..views import ProfileApiView
 
 urlpatterns = [
     # """profile"""
-    path('', ProfileApiView.as_view(), name='user-profile'),
+    path("", ProfileApiView.as_view(), name="user-profile"),
 ]
-
-    

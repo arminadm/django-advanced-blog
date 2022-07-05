@@ -1,14 +1,14 @@
-from django.urls import path, include
 # from .views import PostList, PostDetail
 from .views import PostModelViewSet, CategoryModelViewSet
-from rest_framework.routers import DefaultRouter, SimpleRouter
+from rest_framework.routers import SimpleRouter
+# from rest_framework.routers import DefaultRouter
 
-app_name = 'api-v1'
+app_name = "api-v1"
 
 router = SimpleRouter()
 # router = DefaultRouter()
-router.register('post', PostModelViewSet, basename='post')
-router.register('category', CategoryModelViewSet, basename='category')
+router.register("post", PostModelViewSet, basename="post")
+router.register("category", CategoryModelViewSet, basename="category")
 urlpatterns = router.urls
 
 
@@ -20,4 +20,3 @@ urlpatterns = router.urls
 #     path('posts/', PostViewSet.as_view({'get':'list', 'post':'create'}), name='api-post-list'),
 #     path('posts/<int:pk>/', PostViewSet.as_view({'get':'retrieve', 'put':'update', 'delete':'destroy'}), name='api-post-detail'),
 # ]
- 

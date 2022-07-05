@@ -1,19 +1,27 @@
 # from rest_framework.decorators import api_view, permission_classes
 from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
+# from rest_framework.response import Response
 from ...models import Post, Category
 from .serializer import PostSerializer, CategorySerializer
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
-from rest_framework.views import APIView
-from rest_framework import status
-from rest_framework.generics import GenericAPIView, mixins, ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+# from rest_framework.permissions import IsAdminUser
+# from rest_framework.views import APIView
+# from rest_framework import status
+# from rest_framework.generics import (
+#     GenericAPIView,
+#     mixins,
+#     ListAPIView,
+#     ListCreateAPIView,
+#     RetrieveUpdateDestroyAPIView,
+# )
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from rest_framework.decorators import action
 from .permissions import IsOwnerOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .paginatons import DefaultPagination
-#STEP1: previous function based methods
+
+# STEP1: previous function based methods
 """
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticatedOrReadOnly])
@@ -48,7 +56,7 @@ def api_post_detail(request, pk):
         return Response({"detail": "post removed successfully"})
 """
 
-#STEP2: using APIView for class based views
+# STEP2: using APIView for class based views
 '''
 class PostList(APIView):
     """ displaying all the posts with true status and allow logged in users to save new posts """
@@ -94,8 +102,8 @@ class PostDetail(APIView):
         return Response({"detail":"Post object removed successfully"}, status=status.HTTP_204_NO_CONTENT)
 '''
 
-#STEP3: using GenericAPIView alone 
-'''
+# STEP3: using GenericAPIView alone
+"""
 class PostList(GenericAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
@@ -132,11 +140,11 @@ class PostDetail(GenericAPIView):
         post = get_object_or_404(Post, status=True, id=pk)
         post.delete()
         return Response({"detail":"Post object deleted successfully"})
-'''
+"""
 
 
-#STEP4: using GenericAPIView and mixins
-'''
+# STEP4: using GenericAPIView and mixins
+"""
 class PostList(GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
@@ -165,10 +173,10 @@ class PostDetail(GenericAPIView, mixins.UpdateModelMixin, mixins.RetrieveModelMi
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
-'''
+"""
 
-#STEP5: using ListCreateAPIView
-'''
+# STEP5: using ListCreateAPIView
+"""
 class PostList(ListCreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
@@ -179,11 +187,11 @@ class PostDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True) #you can also override get_object method instead of setting the queryset
-'''
+"""
 
 
-#STEP6: using ViewSET
-'''
+# STEP6: using ViewSET
+"""
 class PostViewSet(ViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
@@ -218,18 +226,27 @@ class PostViewSet(ViewSet):
         post = get_object_or_404(self.queryset, pk=pk)
         post.delete()
         return Response({'detail':'Post object removed successfully'})
-'''
+"""
 
-#STEP7: using ModelViewSet
+# STEP7: using ModelViewSet
 class PostModelViewSet(ModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True)
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     # filterset_fields = ['category', 'author', 'status'] #this method works for singular search field item
-    filterset_fields = {'category':['exact', 'in'], 'author':['exact', 'in'], 'status':['exact', 'in']} #this works for more than one item
-    search_fields = ['author__first_name', 'author__last_name', 'title','content']
-    ordering_fields = ['published_date', 'created_date', 'updated_date']
+    filterset_fields = {
+        "category": ["exact", "in"],
+        "author": ["exact", "in"],
+        "status": ["exact", "in"],
+    }  # this works for more than one item
+    search_fields = [
+        "author__first_name",
+        "author__last_name",
+        "title",
+        "content",
+    ]
+    ordering_fields = ["published_date", "created_date", "updated_date"]
     pagination_class = DefaultPagination
 
     """ you can use action decorator to make new functions in viewsets,their url will automatically generated by routers 
@@ -237,6 +254,7 @@ class PostModelViewSet(ModelViewSet):
     # @action(detail=False, methods=['get'])
     # def get_ok_as_test(self,request):
     #     return Response({'detail':'ok'})
+
 
 class CategoryModelViewSet(ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]

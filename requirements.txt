@@ -13,3 +13,5 @@ django-mail-templated
 djoser
 pytest
 pytest-django
+flake8
+black
