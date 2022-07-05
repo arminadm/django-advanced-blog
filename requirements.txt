@@ -11,3 +11,5 @@ drf-yasg[validation]
 djangorestframework-simplejwt
 django-mail-templated
 djoser
+pytest
+pytest-django
