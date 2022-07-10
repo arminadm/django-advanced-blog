@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "djoser",
     "flake8",
     "black",
+    "faker",
 ]
 
 MIDDLEWARE = [
