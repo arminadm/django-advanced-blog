@@ -16,3 +16,4 @@ pytest-django
 flake8
 black
 faker
+locust
