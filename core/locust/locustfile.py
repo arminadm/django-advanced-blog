@@ -1,17 +1,17 @@
-from locust import HttpUser, task, between
+from locust import HttpUser, task
 
 class QuickstartUser(HttpUser):
-    # wait_time = between(1, 2)
-
-    # def on_start(self):
-    #     self.client.post("/login", json={"username":"foo", "password":"bar"})
+    def on_start(self):
+        response = self.client.post("/accounts/api-v1/jwt/create", data={
+            "email": "armin@armin.com",
+            "password": "123"
+        }).json()
+        self.client.headers = {'Authorization': f"Bearer {response.get('access', None)}"}
 
     @task
-    def hello_world(self):
+    def get_posts_list(self):
         self.client.get("/blog/api-v1/post/")
-        # self.client.get("/world")
-
-    # @task(3)
-    # def view_item(self):
-    #     for item_id in range(10):
-    #         self.client.get(f"/item?id={item_id}", name="/item")
+    
+    @task
+    def get_categories_list(self):
+        self.client.get("/blog/api-v1/category/")
