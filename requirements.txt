@@ -16,3 +16,5 @@ pytest-django
 flake8
 black
 faker
+celery
+redis
