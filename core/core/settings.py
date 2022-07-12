@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "djoser",
     "flake8",
     "black",
+    "faker",
 ]
 
 MIDDLEWARE = [
@@ -202,3 +203,6 @@ EMAIL_HOST = "smtp4dev"  # name of docker service
 EMAIL_PORT = 25
 EMAIL_HOST_USER = "me@gmail.com"
 EMAIL_HOST_PASSWORD = "password"
+
+# celery config
+CELERY_BROKER_URL = 'redis://redis:6379/1'
