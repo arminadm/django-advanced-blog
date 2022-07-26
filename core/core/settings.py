@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "flake8",
     "black",
     "faker",
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -206,3 +207,23 @@ EMAIL_HOST_PASSWORD = "password"
 
 # celery config
 CELERY_BROKER_URL = 'redis://redis:6379/1'
+"""way no.1"""
+# CELERY_BEAT_SCHEDULE = {
+#     "sample_task": {
+#         "task": "accounts.tasks.send_email",
+#         "schedule":5,
+#     },
+# }
+
+
+# django-redis configs
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/2",
+        # "TIMEOUT": 3,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
