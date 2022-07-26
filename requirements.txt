@@ -20,3 +20,4 @@ celery
 redis
 django-celery-beat
 django-redis
+gunicorn
